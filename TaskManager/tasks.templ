@@ -1,0 +1,16 @@
+package main
+
+import "github.com/thejunghare/taskManager"
+
+// Todo: fix this instead component templ
+templ RenderTaskPage(tasks []taskManager.Task) {
+	Layout("Task List", tasks(tasks))
+}
+
+templ Tasks(tasks []taskManager.Task) {
+	<ul>
+		for _, task := range tasks {
+			<li>{ task.Name }</li>
+		}
+	</ul>
+}

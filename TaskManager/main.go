@@ -1,33 +1,56 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
-	"github.com/thejunghare/controllers"
-	"github.com/thejunghare/db"
+	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
+	"github.com/thejunghare/taskManager"
 )
 
 func main() {
-	// connecting to db
-	db.InitDB()
+	// Todo: using sqlc
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("godotenv error: ", err)
+	}
+	ctx := context.Background()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		tasks, err := controllers.GetAllTasksTempl()
+	conn, err := pgx.Connect(ctx, os.Getenv("DATABASE_URL"))
+	if err != nil {
+		fmt.Println("db conn error: ", err)
+	}
+
+	defer conn.Close(ctx)
+
+	queries := taskManager.New(conn)
+
+	// Todo: fix this instead component templ
+	http.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
+		task, err := queries.GetAllTask(ctx)
 		if err != nil {
-			log.Printf("Failed to get tasks: %v", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			fmt.Println("tasks error: ", err)
 			return
 		}
 
-		Hello("Prasad", tasks).Render(r.Context(), w)
+		err = RenderTaskPage(task).Render(ctx, w)
+		if err != nil {
+			fmt.Println("failed to return the templ: ", err)
+
+		}
 	})
 
-	// get tasks
-	http.HandleFunc("/tasks", controllers.GetAllTasks)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 
-	// add task
-	http.HandleFunc("/add", controllers.AddTasks)
+	tasks, err := queries.GetAllTask(ctx)
+	if err != nil {
+		fmt.Println("tasks error: ", err)
+	}
 
-	http.ListenAndServe(":8080", nil)
+	// fmt.Printf("Type of x: %T\n", task)
+	fmt.Printf("Type of x: %T\n", tasks)
 }
