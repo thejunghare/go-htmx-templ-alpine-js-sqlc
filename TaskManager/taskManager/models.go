@@ -4,8 +4,13 @@
 
 package taskManager
 
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
 type Task struct {
-	ID     int64
-	Name   string
-	Status bool
+	ID        int64
+	Name      string
+	Status    bool
+	CreatedAt pgtype.Timestamp
 }

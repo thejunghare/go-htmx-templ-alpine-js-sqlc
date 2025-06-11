@@ -12,3 +12,6 @@ WHERE id = $1;
 -- name: UpdateStatus :exec
 UPDATE tasks SET status = $2
 WHERE id = $1;
+
+-- name: CreateTaskAndReturnId :one
+INSERT INTO tasks (name, created_at) VALUES ($1, $2)RETURNING id;

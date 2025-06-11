@@ -6,8 +6,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/joho/godotenv"
 	"github.com/thejunghare/taskManager"
 )
@@ -54,6 +56,25 @@ func main() {
 		if err != nil {
 			log.Printf("Error while updating  %v", err)
 		}
+	})
+
+	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
+		createId, err := queries.CreateTaskAndReturnId(ctx, taskManager.CreateTaskAndReturnIdParams{
+			Name: "testing",
+			CreatedAt: pgtype.Timestamp{
+				Time:  time.Now(),
+				Valid: true,
+			},
+		})
+
+		if err != nil {
+			log.Printf("Error while updating %v", err)
+			http.Error(w, "Failed to create task", http.StatusInternalServerError)
+			return
+		}
+
+		log.Printf("Inserted ID %v", createId)
+		fmt.Fprintf(w, "Created task with ID %d", createId)
 	})
 
 	http.HandleFunc("/delete/{id}", func(w http.ResponseWriter, r *http.Request) {

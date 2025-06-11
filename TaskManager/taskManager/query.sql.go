@@ -7,7 +7,25 @@ package taskManager
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const createTaskAndReturnId = `-- name: CreateTaskAndReturnId :one
+INSERT INTO tasks (name, created_at) VALUES ($1, $2)RETURNING id
+`
+
+type CreateTaskAndReturnIdParams struct {
+	Name      string
+	CreatedAt pgtype.Timestamp
+}
+
+func (q *Queries) CreateTaskAndReturnId(ctx context.Context, arg CreateTaskAndReturnIdParams) (int64, error) {
+	row := q.db.QueryRow(ctx, createTaskAndReturnId, arg.Name, arg.CreatedAt)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
 
 const delete = `-- name: Delete :exec
 DELETE FROM tasks
@@ -20,7 +38,7 @@ func (q *Queries) Delete(ctx context.Context, id int64) error {
 }
 
 const getAllTask = `-- name: GetAllTask :many
-SELECT id, name, status FROM tasks
+SELECT id, name, status, created_at FROM tasks
 `
 
 func (q *Queries) GetAllTask(ctx context.Context) ([]Task, error) {
@@ -32,7 +50,12 @@ func (q *Queries) GetAllTask(ctx context.Context) ([]Task, error) {
 	var items []Task
 	for rows.Next() {
 		var i Task
-		if err := rows.Scan(&i.ID, &i.Name, &i.Status); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Status,
+			&i.CreatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -44,14 +67,19 @@ func (q *Queries) GetAllTask(ctx context.Context) ([]Task, error) {
 }
 
 const getTask = `-- name: GetTask :one
-SELECT id, name, status FROM tasks
+SELECT id, name, status, created_at FROM tasks
 WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetTask(ctx context.Context, id int64) (Task, error) {
 	row := q.db.QueryRow(ctx, getTask, id)
 	var i Task
-	err := row.Scan(&i.ID, &i.Name, &i.Status)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Status,
+		&i.CreatedAt,
+	)
 	return i, err
 }
 
