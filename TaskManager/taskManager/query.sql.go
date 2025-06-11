@@ -9,8 +9,18 @@ import (
 	"context"
 )
 
+const delete = `-- name: Delete :exec
+DELETE FROM tasks
+WHERE id = $1
+`
+
+func (q *Queries) Delete(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, delete, id)
+	return err
+}
+
 const getAllTask = `-- name: GetAllTask :many
-SELECT id, name FROM tasks
+SELECT id, name, status FROM tasks
 `
 
 func (q *Queries) GetAllTask(ctx context.Context) ([]Task, error) {
@@ -22,7 +32,7 @@ func (q *Queries) GetAllTask(ctx context.Context) ([]Task, error) {
 	var items []Task
 	for rows.Next() {
 		var i Task
-		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+		if err := rows.Scan(&i.ID, &i.Name, &i.Status); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -34,13 +44,28 @@ func (q *Queries) GetAllTask(ctx context.Context) ([]Task, error) {
 }
 
 const getTask = `-- name: GetTask :one
-SELECT id, name FROM tasks
+SELECT id, name, status FROM tasks
 WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetTask(ctx context.Context, id int64) (Task, error) {
 	row := q.db.QueryRow(ctx, getTask, id)
 	var i Task
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.Status)
 	return i, err
+}
+
+const updateStatus = `-- name: UpdateStatus :exec
+UPDATE tasks SET status = $2
+WHERE id = $1
+`
+
+type UpdateStatusParams struct {
+	ID     int64
+	Status bool
+}
+
+func (q *Queries) UpdateStatus(ctx context.Context, arg UpdateStatusParams) error {
+	_, err := q.db.Exec(ctx, updateStatus, arg.ID, arg.Status)
+	return err
 }

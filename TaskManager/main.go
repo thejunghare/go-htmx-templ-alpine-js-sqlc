@@ -33,14 +33,33 @@ func main() {
 	http.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
 		task, err := queries.GetAllTask(ctx)
 		if err != nil {
-			fmt.Println("tasks error: ", err)
+			fmt.Println("Error while fetching tasks: ", err)
 			return
 		}
+		//fmt.Println(task)
 
-		err = RenderTaskPage(task).Render(ctx, w)
+		err = Tasks(task).Render(ctx, w)
 		if err != nil {
-			fmt.Println("failed to return the templ: ", err)
+			fmt.Println("Failed to return the templ: ", err)
 
+		}
+	})
+
+	http.HandleFunc("/update/{id}", func(w http.ResponseWriter, r *http.Request) {
+		err := queries.UpdateStatus(ctx, taskManager.UpdateStatusParams{
+			ID:     18,
+			Status: true,
+		})
+
+		if err != nil {
+			log.Printf("Error while updating  %v", err)
+		}
+	})
+
+	http.HandleFunc("/delete/{id}", func(w http.ResponseWriter, r *http.Request) {
+		err := queries.Delete(ctx, 16)
+		if err != nil {
+			fmt.Println("Error while deleting", err)
 		}
 	})
 
@@ -48,7 +67,7 @@ func main() {
 
 	tasks, err := queries.GetAllTask(ctx)
 	if err != nil {
-		fmt.Println("tasks error: ", err)
+		fmt.Println("Error while fetching tasks: ", err)
 	}
 
 	// fmt.Printf("Type of x: %T\n", task)

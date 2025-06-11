@@ -1,4 +1,5 @@
 CREATE TABLE tasks (
   id   BIGINT PRIMARY KEY NOT NULL,
-  name text      NOT NULL
+  name text      NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE
 );

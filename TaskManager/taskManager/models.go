@@ -5,6 +5,7 @@
 package taskManager
 
 type Task struct {
-	ID   int64
-	Name string
+	ID     int64
+	Name   string
+	Status bool
 }
