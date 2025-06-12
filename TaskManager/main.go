@@ -39,7 +39,7 @@ func main() {
 		}
 		//fmt.Println(task)
 
-		err = Tasks(task).Render(ctx, w)
+		err = TasksPage(task).Render(ctx, w)
 		if err != nil {
 			fmt.Println("Failed to return the templ: ", err)
 
@@ -83,7 +83,20 @@ func main() {
 		}
 	})
 
-	// Todo: get single task
+	http.HandleFunc("/task/{id}", func(w http.ResponseWriter, r *http.Request) {
+		task, err := queries.GetTask(ctx, 24)
+		if err != nil {
+			fmt.Println("Error while fetching", err)
+		}
+
+		log.Fatal(task.ID, task.Name, task.Status)
+
+		err = SingleTaskPage(task).Render(ctx, w)
+		if err != nil {
+			fmt.Println("Failed to return the templ: ", err)
+
+		}
+	})
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 

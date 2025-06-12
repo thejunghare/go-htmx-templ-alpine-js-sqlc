@@ -1,0 +1,29 @@
+package main
+
+import "github.com/thejunghare/taskManager"
+
+templ SingleTaskPage(task taskManager.Task) {
+	<html>
+		<head>
+			<title>Your Tasks</title>
+			<script src="//unpkg.com/alpinejs" defer></script>
+			<style>
+			li {
+				list-style: none;
+			}
+			</style>
+		</head>
+		<body>
+			<ul>
+				<li>
+					{ task.Name }
+					if task.Status == true {
+						<input type="checkbox" checked/>
+					} else {
+						<button type="button">Mark as completed</button>
+					}
+				</li>
+			</ul>
+		</body>
+	</html>
+}

@@ -2,7 +2,7 @@ package main
 
 import "github.com/thejunghare/taskManager"
 
-templ Tasks(tasks []taskManager.Task) {
+templ TasksPage(tasks []taskManager.Task) {
 	<html>
 		<head>
 			<title>Your Tasks</title>
@@ -15,7 +15,9 @@ templ Tasks(tasks []taskManager.Task) {
 		</head>
 		<body>
 			<div x-data="{ open: false }">
-				<button @click="open = true">Expand</button>
+				<button size="md" variant="primary" @click="open = true">
+					Expand
+				</button>
 				<span x-show="open">
 					Content...
 				</span>
@@ -24,11 +26,11 @@ templ Tasks(tasks []taskManager.Task) {
 				for _, task := range tasks {
 					<li>
 						{ task.Name }
+						{ task.ID }
 						if task.Status == true {
 							<input type="checkbox" checked/>
 						} else {
 							// <input type="checkbox"/>
-							<button @click="open = true">Mark as Completed</button>
 							<div x-data="{ open: false }">
 								<span x-show="open">
 									<input type="checkbox" checked/>
