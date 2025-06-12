@@ -1,0 +1,62 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Build outputs
+/tmp
+tmp/
+dist/
+build/
+bin/
+
+# SQLC generated files (if any are generated to a specific dir)
+sqlc.yaml
+db/generated/
+internal/db/generated/
+
+# Templ generated files (by default goes to ./templ_gen/)
+templ_gen/
+
+# Air temp files
+.air
+.air.toml
+.air.*.log
+
+# Node modules and front-end build artifacts
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+assets/css/output.css
+
+# Tailwind watcher cache
+.tailwind-cache/
+
+# IDE/editor stuff
+.vscode/
+.idea/
+*.swp
+*.swo
+*.DS_Store
+
+# Go stuff
+go.sum
+go.work
+go.work.sum
+
+# Logs
+*.log
+
+# Coverage
+coverage.out
+
+# OS junk
+Thumbs.db
+.DS_Store
+ehthumbs.db
+Desktop.ini

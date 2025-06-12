@@ -31,7 +31,6 @@ func main() {
 
 	queries := taskManager.New(conn)
 
-	// Todo: fix this instead component templ
 	http.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
 		task, err := queries.GetAllTask(ctx)
 		if err != nil {
@@ -84,13 +83,15 @@ func main() {
 		}
 	})
 
+	// Todo: get single task
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 
-	tasks, err := queries.GetAllTask(ctx)
+	/* tasks, err := queries.GetAllTask(ctx)
 	if err != nil {
 		fmt.Println("Error while fetching tasks: ", err)
-	}
+	} */
 
 	// fmt.Printf("Type of x: %T\n", task)
-	fmt.Printf("Type of x: %T\n", tasks)
+	//fmt.Printf("Type of x: %T\n", tasks)
 }
